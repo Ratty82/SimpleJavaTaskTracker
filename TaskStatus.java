@@ -1,5 +1,6 @@
 public enum TaskStatus {
     NEW("Новая"), 
     IN_PROGRESS("В работе"), 
-    DONE("Готова")
+    DONE("Готова"),
+    FAIL("Ошибка")
 }

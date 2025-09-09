@@ -33,6 +33,11 @@ public class User {
         return userPosition;
     }
 
+    @Override
+    public String toString() {
+        return "User [ID = " + getUserId() + ", Имя = " + getUserName() + ", Роль = " + getUserPosition() + "]";
+    }
+
     
 
 
