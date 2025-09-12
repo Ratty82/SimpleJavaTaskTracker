@@ -3,12 +3,14 @@ public class Task {
     private String taskName;
     private String taskDetails;
     private TaskStatus taskStatus;
+    private TaskType taskType;
     
-    public Task(String taskName, String taskDetails, TaskStatus taskStatus) {
+    public Task(String taskName, String taskDetails, TaskStatus taskStatus, TaskType taskType) {
         this.taskId = GenId.setTaskId();
         setTaskName(taskName);
-        this.taskDetails = taskDetails;
-        this.taskStatus = taskStatus;
+        setTaskDetails(taskDetails);;
+        setTaskStatus(taskStatus);
+        setTaskType(taskType);
     }
     
     public void setTaskName(String name) throws IllegalArgumentException{
@@ -23,6 +25,22 @@ public class Task {
         } else {throw new IllegalArgumentException("Описание задачи задано некорректно");}
 
     }
+
+    public void setTaskStatus(TaskStatus taskStatus) {
+    if (taskStatus == null) {
+        throw new IllegalArgumentException("Статус не может быть null");
+    }
+    this.taskStatus = taskStatus;
+}
+
+
+    public void setTaskType(TaskType taskType) {
+    if (taskType == null) {
+        throw new IllegalArgumentException("Тип не может быть null");
+    }
+    this.taskType = taskType;
+}
+
 
     public Integer getTaskId() {
         return taskId;
@@ -40,11 +58,16 @@ public class Task {
         return taskStatus;
     }
 
+     public TaskType getTaskType() {
+        return taskType;
+    }
+
     @Override
     public String toString() {
         return "[ ID = " + getTaskId() + ", Название = " + getTaskName() + ", Описание = " + getTaskDetails() + ", Статус = " + getTaskStatus() + "]";
     }
 
+   
     
 
 

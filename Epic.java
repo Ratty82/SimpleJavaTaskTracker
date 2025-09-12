@@ -5,8 +5,9 @@ public class Epic extends Task {
     
     private Map<Integer,SubTask> subTasks = new HashMap<>();
 
-    public Epic(String taskName, String taskDetails, TaskStatus taskStatus) {
-        super(taskName, taskDetails, taskStatus);
+    public Epic(String taskName, String taskDetails, TaskStatus taskStatus, TaskType taskType) {
+        super(taskName, taskDetails, taskStatus,taskType);
+        setEpicStatus();
     }
 
     public Collection getAllSubtasks(){
@@ -43,11 +44,5 @@ public class Epic extends Task {
         this.TaskStatus = TaskStatus.IN_PROGRESS;
     }
 
-
-
-
-
-
-    
     
 }

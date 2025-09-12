@@ -1,7 +1,12 @@
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
 public class User {
     private int userId;
     private String userName;
     private String userPosition;
+    private Map<Integer,Task> assignedTasks = new HashMap<>();
 
     public user(String userName,String userPosition){
         this.userId = GenId.setUserId();
@@ -31,6 +36,10 @@ public class User {
 
     public String getUserPosition() {
         return userPosition;
+    }
+
+    public Collection getAllAssignedTasks(){
+        return assignedTasks.values();                
     }
 
     @Override
