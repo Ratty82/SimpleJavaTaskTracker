@@ -5,10 +5,10 @@ public class Task {
     private TaskStatus taskStatus;
     private TaskType taskType;
     
-    public Task(String taskName, String taskDetails, TaskStatus taskStatus, TaskType taskType) {
-        this.taskId = GenId.setTaskId();
+    public Task(Integer taskId,String taskName, String taskDetails, TaskStatus taskStatus, TaskType taskType) {
+        this.taskId = (taskId == null) ? GenId.setTaskId() : taskId;
         setTaskName(taskName);
-        setTaskDetails(taskDetails);;
+        setTaskDetails(taskDetails);
         setTaskStatus(taskStatus);
         setTaskType(taskType);
     }

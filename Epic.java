@@ -3,11 +3,18 @@ import java.util.stream.*;
 
 public class Epic extends Task {
     
-    private Map<Integer,SubTask> subTasks = new HashMap<>();
+    private Map<Integer,SubTask> subTasks;
 
-    public Epic(String taskName, String taskDetails, TaskStatus taskStatus, TaskType taskType) {
-        super(taskName, taskDetails, taskStatus,taskType);
+    public Epic(Integer taskId, String taskName, String taskDetails, TaskStatus taskStatus, TaskType taskType) {
+        super(taskId,taskName, taskDetails, taskStatus,taskType);
         setEpicStatus();
+        this.subTasks = new HashMap<>();
+    }
+
+     public Epic(Integer taskId, String taskName, String taskDetails, TaskStatus taskStatus, TaskType taskType, Map<Integer,SubTask> subTasks) {
+        super(taskId,taskName, taskDetails, taskStatus,taskType);
+        setEpicStatus();
+        this.subTasks = subTasks;
     }
 
     public Collection getAllSubtasks(){
