@@ -1,17 +1,21 @@
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class User {
     private int userId;
     private String userName;
     private String userPosition;
-    private Map<Integer,Task> assignedTasks = new HashMap<>();
+    private LinkedHashSet<Integer> assignedTasks;
 
     public user(String userName,String userPosition){
         this.userId = GenId.setUserId();
         setUserName(userName);
         setUserPosition(userPosition);
+        assignedTasks = new LinkedHashSet<>();
     }
 
     public void setUserName(String name) throws IllegalArgumentException{
@@ -38,9 +42,23 @@ public class User {
         return userPosition;
     }
 
-    public Collection getAllAssignedTasks(){
-        return assignedTasks.values();                
+    public boolean getAssignedTaskById(Integer assignedTaskId){
+        return assignedTasks.values().stream()
+                .anyMatch(n -> n.equals(assignedTaskId));
     }
+
+
+    public void addAssignedtask(Integer assignedTaskId){
+        if (assignedTaskId == null || assignedTaskId < 0) {throw new IllegalArgumentException("ID не должен быть Null или отрицательным");}
+        else {
+            assignedTasks.add(assignedTaskId);
+        }
+    }
+
+    public Set<Integer> getAsignedTaskIds() {
+        return Collections.unmodifiableSet(assignedTasks); 
+    }
+
 
     @Override
     public String toString() {

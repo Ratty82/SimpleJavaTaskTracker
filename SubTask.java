@@ -1,7 +1,7 @@
 public class SubTask extends Task {
     private Integer parentTaskId;
 
-    public SubTask(Integer taskId, String taskName, String taskDetails, TaskStatus taskStatus, TaskType taskType) {
+    public SubTask(Integer taskId, String taskName, String taskDetails, TaskStatus taskStatus, TaskType taskType, Integer parentTaskId) {
         super(taskId, taskName, taskDetails, taskStatus,taskType);
         setSubTaskParentId(parentTaskId);
     }

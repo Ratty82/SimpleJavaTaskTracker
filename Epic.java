@@ -1,14 +1,15 @@
 import java.util.*;
+import java.util.concurrent.StructuredTaskScope.Subtask;
 import java.util.stream.*;
 
 public class Epic extends Task {
     
-    private Map<Integer,SubTask> subTasks;
+    private LinkedHashSet<Integer> subTasks;
 
     public Epic(Integer taskId, String taskName, String taskDetails, TaskStatus taskStatus, TaskType taskType) {
         super(taskId,taskName, taskDetails, taskStatus,taskType);
         setEpicStatus();
-        this.subTasks = new HashMap<>();
+        this.subTasks = new LinkedHashSet<>();
     }
 
      public Epic(Integer taskId, String taskName, String taskDetails, TaskStatus taskStatus, TaskType taskType, Map<Integer,SubTask> subTasks) {
@@ -17,24 +18,45 @@ public class Epic extends Task {
         this.subTasks = subTasks;
     }
 
-    public Collection getAllSubtasks(){
-        return subTasks.values();                
+    //добавить ID задачи в подзадачи
+    public void addSubtask(Integer subTaskId){
+        if (subTaskId == null || subTaskId < 0) {throw new IllegalArgumentException("ID не должен быть Null или отрицательным");}
+        else {
+            subTasks.add(subTaskId);
+        }
     }
 
-    public SubTask getSubtaskById(Integer id){
+    //Проверить есть ли ID в списке подзадач
+    public boolean getSubTaskById(Integer subTaskId){
+        return subTasks.values().stream()
+                .anyMatch(n -> n.equals(subTaskId));
+    }
+
+    //Достать все подзадачи 
+    public Set<Integer> getSubTaskIds() {
+        return Collections.unmodifiableSet(subTasks); 
+    }
+
+    /*public Collection<SubTask> getAllSubtasks(){
+        return subTasks.values().stream()
+                .map(tasks::get)
+                .toList();                
+    }*/
+
+    /*public SubTask getSubtaskById(Integer id){
         SubTask foundSubTask = subTasks.values().stream()
                 .filter(SubTask -> SubTask.getTaskId().equals(id))
                 .findFirst()
                 .orElse(new SubTask(-1,setTaskName("FAIL ID"),setTaskDetails("FAIL ID"),FAIL));
         return foundSubTask;
-    }
+    }*/
 
-    public Collection getSubtasksByStatus(TaskStatus status){
+    /*public Collection getSubtasksByStatus(TaskStatus status){
         Collection foundSubTasks = subTasks.values().stream()
                    .filter(SubTask -> SubTask.getTaskStatus().equals(status))
                    .toList();
         return foundSubTasks;
-    }
+    }*/
 
     /*- b. Для эпиков:
     - если у эпика нет подзадач или все они имеют статус NEW, то статус должен быть NEW.
