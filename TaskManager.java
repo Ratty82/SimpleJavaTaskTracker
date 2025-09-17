@@ -14,13 +14,6 @@ public class TaskManager {
     }
 
     //c. Получение по идентификатору.
-    /*public Task findTaskByID(Integer taskId) throws TaskNotFoundException,IllegalArgumentException {
-        if (taskId == null || taskId < 0) {throw new IllegalArgumentException("ID не должен быть Null или отрицательным");}
-        else { 
-            if (tasks.containsKey(taskId)) {
-                    return tasks.get(taskId);
-            } else {throw new TaskNotFoundException(taskId);} }      
-    }*/
     public <T extends Task> T findTaskByID(Integer taskId, Class<T> type) throws TaskNotFoundException, IllegalArgumentException {
         if (taskId == null || taskId < 0)
         throw new IllegalArgumentException("ID не должен быть null или отрицательным");
@@ -69,7 +62,23 @@ public class TaskManager {
     public void removeTaskById(Integer taskId) throws IllegalArgumentException,TaskNotFoundException {
         if (taskId == null || taskId < 0) {throw new IllegalArgumentException("ID не должен быть Null или отрицательным");}
         if (!tasks.containsKey(taskId)) {{throw new TaskNotFoundException(taskId);}}
+        if (findTaskByID(taskId, Task.class) instanceof SubTask) {
+            Integer parentId = findTaskByID(taskId, SubTask.class).getTaskParentId();
+            tasks.remove(taskId);
+            Epic epicToUpdate = findTaskByID(parentId, Epic.class);
+            HashSet<Integer> subTasks = epicToUpdate.getAllSubtaskIds();
+            subTasks.remove(taskId);
+            Epic updatedEpic = new Epic(epicToUpdate.getTaskId(),epicToUpdate.getTaskName(),epicToUpdate.getTaskDetails(),epicToUpdate.getTaskStatus(),epicToUpdate.getTaskType(),subTasks);
+            setEpicStatus(updatedEpic);
+        } 
+        if (findTaskByID(taskId, Task.class) instanceof Epic){
+            HashSet<Integer> subTasks = findTaskByID(taskId, Epic.class).getAllSubtaskIds();
+            tasks.remove(taskId);
+            tasks.keySet().removeAll(subTasks);
+        }
+        else {
         tasks.remove(taskId);
+        }
     }
 
     //- a. Получение списка всех подзадач определённого эпика.
