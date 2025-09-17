@@ -1,5 +1,5 @@
 public class Task {
-    private int taskId;
+    private Integer taskId;
     private String taskName;
     private String taskDetails;
     private TaskStatus taskStatus;
@@ -7,39 +7,21 @@ public class Task {
     
     public Task(Integer taskId,String taskName, String taskDetails, TaskStatus taskStatus, TaskType taskType) {
         this.taskId = (taskId == null) ? GenId.setTaskId() : taskId;
-        setTaskName(taskName);
-        setTaskDetails(taskDetails);
-        setTaskStatus(taskStatus);
-        setTaskType(taskType);
-    }
-    
-    public void setTaskName(String name) throws IllegalArgumentException{
-        if (!name.trim().isEmpty()) {
-            this.taskName = name;
-        } else {throw new IllegalArgumentException("Название задачи задано некорректно");}
+        this.taskName = validateText(taskName, "Название не может быть пустым или null");
+        this.taskDetails = validateText(taskDetails, "Описание не может быть пустым или null");
+        this.taskStatus = checkForNulls(taskStatus, "Статус не может быть null");
+        this.taskType = checkForNulls(taskType, "Тип не может быть null");
     }
 
-    public void setTaskDetails(String details) throws IllegalArgumentException{
-        if (!details.trim().isEmpty()) {
-            this.taskDetails = details;
-        } else {throw new IllegalArgumentException("Описание задачи задано некорректно");}
-
+    private static String validateText(String string, String message) {
+        if (string == null || string.trim().isEmpty()) throw new IllegalArgumentException(message);
+        return string;
     }
 
-    public void setTaskStatus(TaskStatus taskStatus) {
-    if (taskStatus == null) {
-        throw new IllegalArgumentException("Статус не может быть null");
+    private static <T> T checkForNulls(T v, String msg) {
+        if (v == null) throw new IllegalArgumentException(msg);
+        return v;
     }
-    this.taskStatus = taskStatus;
-}
-
-
-    public void setTaskType(TaskType taskType) {
-    if (taskType == null) {
-        throw new IllegalArgumentException("Тип не может быть null");
-    }
-    this.taskType = taskType;
-}
 
 
     public Integer getTaskId() {

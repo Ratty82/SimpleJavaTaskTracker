@@ -5,9 +5,5 @@ public class GenId {
     public static int setTaskId(){
         return ++counterTask;
     }
-
-    public static int setUserId(){
-        return ++counterUser;
-    }
     
 }

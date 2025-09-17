@@ -3,15 +3,12 @@ public class SubTask extends Task {
 
     public SubTask(Integer taskId, String taskName, String taskDetails, TaskStatus taskStatus, TaskType taskType, Integer parentTaskId) {
         super(taskId, taskName, taskDetails, taskStatus,taskType);
-        setSubTaskParentId(parentTaskId);
+        this.parentTaskId =  validateInteger(parentTaskId);
     }
 
-    
-    public void setSubTaskParentId(Integer id) throws IllegalArgumentException{
-        if (id > 0 ) {
-            this.parentTaskId = id;
-        } else {throw new IllegalArgumentException("Epic ID не задан или меньше нуля");}
-
+    private static Integer validateInteger(Integer intv, String message) {
+        if (intv == null || intv < 0) throw new IllegalArgumentException(message);
+        return string;
     }
     
     public Integer getTaskParentId(){              

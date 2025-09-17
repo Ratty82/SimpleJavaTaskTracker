@@ -1,5 +1,15 @@
 public enum TaskType {
     TASK("Задача"), 
     EPIC("Эпик"),
-    ALL("Все")
+    SUBTASK("Подзадача");
+
+    private final String desc;
+
+    TaskType(String desc) {
+        this.desc = desc;
+    }
+
+     public String getDesc() {
+        return desc;
+    }
 }
