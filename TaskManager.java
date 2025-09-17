@@ -14,13 +14,21 @@ public class TaskManager {
     }
 
     //c. Получение по идентификатору.
-    public Task findTaskByID(Integer taskId) throws TaskNotFoundException,IllegalArgumentException {
+    /*public Task findTaskByID(Integer taskId) throws TaskNotFoundException,IllegalArgumentException {
         if (taskId == null || taskId < 0) {throw new IllegalArgumentException("ID не должен быть Null или отрицательным");}
         else { 
             if (tasks.containsKey(taskId)) {
                     return tasks.get(taskId);
             } else {throw new TaskNotFoundException(taskId);} }      
+    }*/
+    public <T extends Task> T findTaskByID(Integer taskId, Class<T> type) throws TaskNotFoundException, IllegalArgumentException {
+        if (taskId == null || taskId < 0)
+        throw new IllegalArgumentException("ID не должен быть null или отрицательным");
+        Task t = tasks.get(taskId);
+        if (t == null) throw new TaskNotFoundException(taskId);
+        return type.cast(t);
     }
+
 
     //d. Создание. Сам объект должен передаваться в качестве параметра.
     public void createTask(Task task) throws IllegalArgumentException,TaskAlreadyExistException {
@@ -31,12 +39,31 @@ public class TaskManager {
     }
 
     //- e. Обновление. Новая версия объекта с верным идентификатором передаётся в виде параметра.
-    public void updateTask(Task task) throws IllegalArgumentException,TaskNotFoundException {
-        if (task == null) {throw new IllegalArgumentException("Задача не должна быть Null");}
-        if (!tasks.containsKey(task.getTaskId())) {{throw new TaskNotFoundException(task.getTaskId());}}
-        if (task instanceof Epic) {tasks.put(task.getTaskId(),setEpicStatus((Epic) task));}
-        else {tasks.put(task.getTaskId(),task);}
+    public <T extends Task> T updateTask(T task, Class<T> type) throws IllegalArgumentException, TaskNotFoundException {
+        if (task == null) throw new IllegalArgumentException("Задача не должна быть null");
+        Task old = tasks.get(task.getTaskId());
+        if (old == null) throw new TaskNotFoundException(task.getTaskId());
+        if (task instanceof Epic epic) {
+            T updated = type.cast(setEpicStatus(epic));
+            tasks.put(task.getTaskId(), updated);
+            return updated;
+        }
+        if (task instanceof SubTask subTask) {
+            T updated = type.cast(subTask);
+            tasks.put(task.getTaskId(), updated);
+            Integer parendId = subTask.getTaskParentId();
+            Epic epicToUpdate = findTaskByID(parendId, Epic.class);
+            tasks.put(parendId, setEpicStatus(epicToUpdate));
+            return updated;
+        }
+        else {
+            T updated = type.cast(task);
+            tasks.put(task.getTaskId(), updated);
+            return updated;
+        }
     }
+
+
 
     //f. Удаление по идентификатору.
     public void removeTaskById(Integer taskId) throws IllegalArgumentException,TaskNotFoundException {
@@ -68,8 +95,8 @@ public class TaskManager {
             Epic newEpic = new Epic(epic.getTaskId(),epic.getTaskName(),epic.getTaskDetails(),TaskStatus.DONE,TaskType.EPIC,epic.getAllSubtaskIds());
             return newEpic;
         }
-        Epic newEpic = new Epic(epic.getTaskId(),epic.getTaskName(),epic.getTaskDetails(),TaskStatus.IN_PROGRESS,TaskType.EPIC,epic.getAllSubtaskIds());
-        return newEpic;
+        else {Epic newEpic = new Epic(epic.getTaskId(),epic.getTaskName(),epic.getTaskDetails(),TaskStatus.IN_PROGRESS,TaskType.EPIC,epic.getAllSubtaskIds());
+             return newEpic;}
     }
     
     
@@ -78,7 +105,10 @@ public class TaskManager {
         if (task == null) {throw new IllegalArgumentException("Добавляемая задача не может быть null");} 
         if (epic == null) {throw new IllegalArgumentException("Эпик не должен быть Null");}
         if (epic.checkSubTaskById(task.getTaskId())) {throw new TaskAlreadyExistException(task.getTaskId());}
-        Epic epicToUpdate = new Epic(epic.getTaskId(),epic.getTaskName(),epic.getTaskDetails(),epic.getTaskStatus(),epic.getTaskType(),epic.getAllSubtaskIds());
+        HashSet<Integer> newSubTasks = new HashSet<>();
+        newSubTasks = epic.getAllSubtaskIds();
+        newSubTasks.add(task.getTaskId());
+        Epic epicToUpdate = new Epic(epic.getTaskId(),epic.getTaskName(),epic.getTaskDetails(),epic.getTaskStatus(),epic.getTaskType(),newSubTasks);
         tasks.put(epic.getTaskId(), setEpicStatus(epicToUpdate));
         SubTask newSub = new SubTask(task.getTaskId(), task.getTaskName(), task.getTaskDetails(), task.getTaskStatus(), TaskType.SUBTASK,epic.getTaskId());
         tasks.put(newSub.getTaskId(),newSub);
