@@ -40,13 +40,21 @@ public class Task {
         return taskStatus;
     }
 
+    public String getTaskStatusString() {
+        return taskStatus.getDesc();
+    }
+
      public TaskType getTaskType() {
         return taskType;
     }
 
+    public String getTaskTypeString() {
+        return taskType.getDesc();
+    }
+
     @Override
     public String toString() {
-        return "[ ID = " + getTaskId() + ", Название = " + getTaskName() + ", Описание = " + getTaskDetails() + ", Статус = " + getTaskStatus() + "]";
+        return "[ ID = " + getTaskId() + ", Название = " + getTaskName() + ", Описание = " + getTaskDetails() + ", Статус = " + getTaskStatusString() + ", Тип = " + getTaskTypeString() +"]";
     }
 
    
