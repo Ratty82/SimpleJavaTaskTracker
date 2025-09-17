@@ -57,22 +57,22 @@ public class TaskManager {
     }
 
 
-
     //f. Удаление по идентификатору.
     public void removeTaskById(Integer taskId) throws IllegalArgumentException,TaskNotFoundException {
         if (taskId == null || taskId < 0) {throw new IllegalArgumentException("ID не должен быть Null или отрицательным");}
-        if (!tasks.containsKey(taskId)) {{throw new TaskNotFoundException(taskId);}}
-        if (findTaskByID(taskId, Task.class) instanceof SubTask) {
-            Integer parentId = findTaskByID(taskId, SubTask.class).getTaskParentId();
-            tasks.remove(taskId);
+        Task task = tasks.get(taskId);
+        if (task == null) {throw new TaskNotFoundException(taskId);}
+        if (task instanceof SubTask sub) {
+            Integer parentId = sub.getTaskParentId();
             Epic epicToUpdate = findTaskByID(parentId, Epic.class);
             HashSet<Integer> subTasks = epicToUpdate.getAllSubtaskIds();
+            tasks.remove(taskId);
             subTasks.remove(taskId);
             Epic updatedEpic = new Epic(epicToUpdate.getTaskId(),epicToUpdate.getTaskName(),epicToUpdate.getTaskDetails(),epicToUpdate.getTaskStatus(),epicToUpdate.getTaskType(),subTasks);
             setEpicStatus(updatedEpic);
         } 
-        if (findTaskByID(taskId, Task.class) instanceof Epic){
-            HashSet<Integer> subTasks = findTaskByID(taskId, Epic.class).getAllSubtaskIds();
+        if (task instanceof Epic epic){
+            HashSet<Integer> subTasks = epic.getAllSubtaskIds();
             tasks.remove(taskId);
             tasks.keySet().removeAll(subTasks);
         }

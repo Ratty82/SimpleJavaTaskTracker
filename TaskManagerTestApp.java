@@ -50,8 +50,19 @@ public class TaskManagerTestApp {
         finally{
             System.out.println("Список созданных задач: " + tm.getAllTasks());}
 
+        
         System.out.println("");
-        System.out.println("4. Меняем статус задачи");   
+        System.out.println("4. Удаляем задачи");   
+
+        try {
+            tm.removeTaskById(1); //подзадача
+            tm.removeTaskById(7); //эпик
+        }
+        catch (IllegalArgumentException e) {System.out.println("Ошибка : " + e.getMessage());}
+        catch (TaskNotFoundException e) {System.out.println("Ошибка : " + e.getMessage());}
+        finally{
+            System.out.println("Список созданных задач: " + tm.getAllTasks());}
+
         
 
 

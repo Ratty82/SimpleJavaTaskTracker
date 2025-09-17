@@ -14,5 +14,13 @@ public class SubTask extends Task {
     public Integer getTaskParentId(){              
         return parentTaskId;
     }
+
+   @Override
+    public String toString() {
+        return super.toString() + "[Род.задача: " + getTaskParentId() +  "]";
+    }
+   
+
+    
     
 }
