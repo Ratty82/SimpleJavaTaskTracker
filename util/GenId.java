@@ -1,3 +1,5 @@
+package util;
+
 public class GenId {
     private static int counterTask;
 

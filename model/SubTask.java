@@ -1,3 +1,8 @@
+package model;
+
+import util.TaskStatus;
+import util.TaskType;
+
 public class SubTask extends Task {
     private Integer parentTaskId;
 

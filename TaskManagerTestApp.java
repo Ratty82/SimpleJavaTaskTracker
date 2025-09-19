@@ -1,3 +1,12 @@
+import exceptions.TaskAlreadyExistException;
+import exceptions.TaskNotFoundException;
+import model.Epic;
+import model.SubTask;
+import model.Task;
+import service.TaskManager;
+import util.TaskStatus;
+import util.TaskType;
+
 public class TaskManagerTestApp {
 
     public static void main(String[] args) {
@@ -8,7 +17,7 @@ public class TaskManagerTestApp {
         System.out.println("1. Создаем задачи и эпики");
 
         try {
-        tm.createTask(new Task(null,"Тестовая задача 1", "Проверка метода createTask", TaskStatus.NEW,TaskType.TASK));
+        tm.createTask(new Task(null,"Тестовая задача 1", "Проверка метода createTask", TaskStatus.NEW, TaskType.TASK));
         tm.createTask(new Task(null,"Тестовая задача 2", "Проверка метода createTask", TaskStatus.NEW,TaskType.TASK));
         tm.createTask(new Task(null,"Тестовая задача 3", "Проверка метода createTask", TaskStatus.NEW,TaskType.TASK));
         tm.createTask(new Task(null,"Тестовая задача 4", "Проверка метода createTask", TaskStatus.NEW,TaskType.TASK));

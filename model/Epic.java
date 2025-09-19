@@ -1,5 +1,8 @@
+package model;
+import util.TaskStatus;
+import util.TaskType;
+
 import java.util.*;
-import java.util.stream.*;
 
 public class Epic extends Task {
     

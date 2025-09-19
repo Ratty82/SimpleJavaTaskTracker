@@ -1,3 +1,13 @@
+package service;
+
+import exceptions.TaskAlreadyExistException;
+import exceptions.TaskNotFoundException;
+import model.Epic;
+import model.SubTask;
+import model.Task;
+import util.TaskStatus;
+import util.TaskType;
+
 import java.util.*;
 
 public class TaskManager {
@@ -24,7 +34,7 @@ public class TaskManager {
 
 
     //d. Создание. Сам объект должен передаваться в качестве параметра.
-    public void createTask(Task task) throws IllegalArgumentException,TaskAlreadyExistException {
+    public void createTask(Task task) throws IllegalArgumentException, TaskAlreadyExistException {
         if (task == null) {throw new IllegalArgumentException("Задача не должна быть Null");}
         if (tasks.containsKey(task.getTaskId())) {throw new TaskAlreadyExistException(task.getTaskId());}
         if (task instanceof Epic) {tasks.put(task.getTaskId(),setEpicStatus((Epic) task));}
@@ -97,7 +107,7 @@ public class TaskManager {
      
     public Epic setEpicStatus(Epic epic){
         if (epic.getAllSubtaskIds().isEmpty() || getAllSubTasks(epic).stream().allMatch(t -> t.getTaskStatus() == TaskStatus.NEW)) {
-            Epic newEpic = new Epic(epic.getTaskId(),epic.getTaskName(),epic.getTaskDetails(),TaskStatus.NEW,TaskType.EPIC,epic.getAllSubtaskIds());
+            Epic newEpic = new Epic(epic.getTaskId(),epic.getTaskName(),epic.getTaskDetails(),TaskStatus.NEW, TaskType.EPIC,epic.getAllSubtaskIds());
             return newEpic;
         }
         if (getAllSubTasks(epic).stream().allMatch(t -> t.getTaskStatus() == TaskStatus.DONE)) {

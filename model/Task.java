@@ -1,3 +1,8 @@
+package model;
+import util.TaskStatus;
+import util.TaskType;
+import util.GenId;
+
 public class Task {
     private Integer taskId;
     private String taskName;
@@ -5,7 +10,7 @@ public class Task {
     private TaskStatus taskStatus;
     private TaskType taskType;
     
-    public Task(Integer taskId,String taskName, String taskDetails, TaskStatus taskStatus, TaskType taskType) {
+    public Task(Integer taskId, String taskName, String taskDetails, TaskStatus taskStatus, TaskType taskType) {
         this.taskId = (taskId == null) ? GenId.setTaskId() : taskId;
         this.taskName = validateText(taskName, "Название не может быть пустым или null");
         this.taskDetails = validateText(taskDetails, "Описание не может быть пустым или null");
