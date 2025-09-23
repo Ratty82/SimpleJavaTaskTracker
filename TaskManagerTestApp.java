@@ -3,6 +3,8 @@ import exceptions.TaskNotFoundException;
 import model.Epic;
 import model.SubTask;
 import model.Task;
+import service.HistoryManager;
+import service.Managers;
 import service.TaskManager;
 import util.TaskStatus;
 import util.TaskType;
@@ -10,7 +12,8 @@ import util.TaskType;
 public class TaskManagerTestApp {
 
     public static void main(String[] args) {
-        TaskManager tm = new TaskManager();
+        HistoryManager hm = Managers.getDefaultHistory();
+        TaskManager tm = Managers.getDefault(hm);
 
         //- Создайте 2 задачи, один эпик с 2 подзадачами, а другой эпик с 1 подзадачей.
         //- Распечатайте списки эпиков, задач и подзадач, через `System.out.println(..)`
@@ -28,7 +31,9 @@ public class TaskManagerTestApp {
         catch (IllegalArgumentException e) {System.out.println("Ошибка : " + e.getMessage());}
         catch (TaskAlreadyExistException e) {System.out.println("Ошибка : " + e.getMessage());}
         finally{
-            System.out.println("Список созданных задач: " + tm.getAllTasks());}
+            System.out.println("Список задач: ");
+            tm.getAllTasks().forEach(System.out::println);
+        }
 
         System.out.println("");
         System.out.println("2. Ищем задачи и включаем их в эпики");
@@ -42,7 +47,9 @@ public class TaskManagerTestApp {
         catch (TaskNotFoundException e) {System.out.println("Ошибка : " + e.getMessage());}
         catch (TaskAlreadyExistException e) {System.out.println("Ошибка : " + e.getMessage());}
         finally{
-            System.out.println("Список созданных задач: " + tm.getAllTasks());}
+            System.out.println("Список задач: ");
+            tm.getAllTasks().forEach(System.out::println);
+        }
 
         System.out.println("");
         //- Измените статусы созданных объектов, распечатайте. Проверьте, что статус задачи и подзадачи сохранился, а статус эпика рассчитался по статусам подзадач.
@@ -57,7 +64,9 @@ public class TaskManagerTestApp {
         catch (IllegalArgumentException e) {System.out.println("Ошибка : " + e.getMessage());}
         catch (TaskNotFoundException e) {System.out.println("Ошибка : " + e.getMessage());}
         finally{
-            System.out.println("Список созданных задач: " + tm.getAllTasks());}
+            System.out.println("Список задач: ");
+            tm.getAllTasks().forEach(System.out::println);
+        }
 
         
         System.out.println("");
@@ -70,7 +79,24 @@ public class TaskManagerTestApp {
         catch (IllegalArgumentException e) {System.out.println("Ошибка : " + e.getMessage());}
         catch (TaskNotFoundException e) {System.out.println("Ошибка : " + e.getMessage());}
         finally{
-            System.out.println("Список созданных задач: " + tm.getAllTasks());}
+            System.out.println("Список задач: ");
+            tm.getAllTasks().forEach(System.out::println);
+        }
+
+        try {
+            tm.findTaskByID(2, SubTask.class);
+            tm.findTaskByID(6, Epic.class);
+            tm.findTaskByID(4, Task.class);
+            tm.findTaskByID(2, SubTask.class);
+            tm.findTaskByID(6, Epic.class);
+            tm.findTaskByID(4, Task.class);
+        }
+        catch (IllegalArgumentException e) {System.out.println("Ошибка : " + e.getMessage());}
+        catch (TaskNotFoundException e) {System.out.println("Ошибка : " + e.getMessage());}
+        finally{
+            System.out.println("Список задач в истории: ");
+        }
+        hm.getHistory().forEach(System.out::println);
 
         
 
