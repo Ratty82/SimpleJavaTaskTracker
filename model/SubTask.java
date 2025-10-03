@@ -24,7 +24,9 @@ public class SubTask extends Task {
     public String toString() {
         return super.toString() + "[Род.задача: " + getTaskParentId() +  "]";
     }
-   
+
+   @Override
+    public String toCSV() {return super.toCSV() + "," + getTaskParentId();}
 
     
     

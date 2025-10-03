@@ -42,6 +42,9 @@ public class Epic extends Task {
         return super.toString() + "[Подзадачи: " + getAllSubtaskIds() +  "]";
     }
 
+    @Override
+    public String toCSV() {return super.toCSV() + "," + getAllSubtaskIds();}
+
     
     
 }

@@ -62,6 +62,10 @@ public class Task {
         return "[ ID = " + getTaskId() + ", Название = " + getTaskName() + ", Описание = " + getTaskDetails() + ", Статус = " + getTaskStatusString() + ", Тип = " + getTaskTypeString() +"]";
     }
 
+    public String toCSV(){
+        return getTaskId() + "," + getTaskName() + "," + getTaskDetails() + "," + getTaskStatusString() + "," + getTaskTypeString();
+    }
+
    
     
 
