@@ -3,17 +3,20 @@ import exceptions.TaskNotFoundException;
 import model.Epic;
 import model.SubTask;
 import model.Task;
+import service.FileBackedTasksManager;
 import service.HistoryManager;
 import service.Managers;
 import service.TaskManager;
 import util.TaskStatus;
 import util.TaskType;
+import java.nio.file.Path;
 
 public class TaskManagerTestApp {
 
     public static void main(String[] args) {
         HistoryManager hm = Managers.getDefaultHistory();
         TaskManager tm = Managers.getDefault(hm);
+        FileBackedTasksManager fbm = Managers.getDefautFileBacked(hm,Path.of("d:/task/task.csv"));
 
         //- Создайте 2 задачи, один эпик с 2 подзадачами, а другой эпик с 1 подзадачей.
         //- Распечатайте списки эпиков, задач и подзадач, через `System.out.println(..)`
