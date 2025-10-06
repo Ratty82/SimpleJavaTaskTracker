@@ -5,6 +5,7 @@ import exceptions.TaskNotFoundException;
 import model.Epic;
 import model.SubTask;
 import model.Task;
+import util.GenId;
 import util.TaskStatus;
 import util.TaskType;
 
@@ -24,8 +25,10 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
 
     public FileBackedTasksManager(HistoryManager history, Path saveFile) {
         super(history);
+        this.history = history;
         this.saveFile = saveFile;
         try {
+            tasks = new HashMap<>();
             loadFromFile();
         }
         catch (IOException | TaskNotFoundException e) {
@@ -99,6 +102,11 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
             Task t = fromString(l);
             tasks.put(t.getTaskId(),t);
         }
+        Integer maxId = tasks.keySet().stream()
+                .max(Comparator.comparingInt(Integer::intValue))
+                .get();
+        int maxIdInt = maxId;
+        GenId.setCounterTask(maxIdInt);
         for (String l : listHist) {
             Task t = fromString(l);
             history.addTaskToHistory(t);
@@ -117,6 +125,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
                         throw new UncheckedIOException(e);
                     }});
         wr.newLine();
+        if (history.getHistory() != null) {
         history.getHistory().stream()
                 .forEach(task -> {
                     try {
@@ -126,8 +135,17 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
                     catch (IOException e) {
                         throw new UncheckedIOException(e);
                     }});
+        }
         wr.close();
     }
+
+    @Override
+    public List<Task> getAllTasks()
+    {
+        return tasks.values().stream().toList();
+    }
+
+
 
     //d. Создание. Сам объект должен передаваться в качестве параметра.
     @Override
@@ -140,15 +158,15 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
         }
         if (task instanceof Epic) {
             tasks.put(task.getTaskId(),setEpicStatus((Epic) task));
+
         }
         else {
             tasks.put(task.getTaskId(),task);
-            try {
-                save();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-
+        }
+        try {
+            save();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -239,6 +257,64 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
             }
         }
     }
+
+    @Override
+    public Epic setEpicStatus(Epic epic){
+        if (epic.getAllSubtaskIds().isEmpty() || getAllSubTasks(epic).stream().allMatch(t -> t.getTaskStatus() == TaskStatus.NEW)) {
+            return new Epic(epic.getTaskId(),epic.getTaskName(),epic.getTaskDetails(),TaskStatus.NEW, TaskType.EPIC,epic.getAllSubtaskIds());
+        }
+        if (getAllSubTasks(epic).stream().allMatch(t -> t.getTaskStatus() == TaskStatus.DONE)) {
+            return new Epic(epic.getTaskId(),epic.getTaskName(),epic.getTaskDetails(),TaskStatus.DONE,TaskType.EPIC,epic.getAllSubtaskIds());
+        }
+        else {
+            return new Epic(epic.getTaskId(),epic.getTaskName(),epic.getTaskDetails(),TaskStatus.IN_PROGRESS,TaskType.EPIC,epic.getAllSubtaskIds());
+        }
+
+
+    }
+
+    @Override
+    public <T extends Task> T findTaskByID(Integer taskId, Class<T> type) throws TaskNotFoundException, IllegalArgumentException {
+        if (taskId == null || taskId < 0) {
+            throw new IllegalArgumentException("ID не должен быть null или отрицательным");
+        }
+        Task t = tasks.get(taskId);
+        if (t == null) {
+            throw new TaskNotFoundException(taskId);
+        }
+        else {
+            history.addTaskToHistory(t);
+            return type.cast(t);
+        }
+    }
+
+    //добавить задачу в эпик
+    @Override
+    public void includeTaskToEpic(Task task,Epic epic) throws IllegalArgumentException, TaskAlreadyExistException {
+        if (task == null) {
+            throw new IllegalArgumentException("Добавляемая задача не может быть null");
+        }
+        if (epic == null) {
+            throw new IllegalArgumentException("Эпик не должен быть Null");
+        }
+        if (epic.checkSubTaskById(task.getTaskId())) {
+            throw new TaskAlreadyExistException(task.getTaskId());
+        }
+        HashSet<Integer> newSubTasks = new HashSet<>();
+        newSubTasks = epic.getAllSubtaskIds();
+        newSubTasks.add(task.getTaskId());
+        Epic epicToUpdate = new Epic(epic.getTaskId(),epic.getTaskName(),epic.getTaskDetails(),epic.getTaskStatus(),epic.getTaskType(),newSubTasks);
+        tasks.put(epic.getTaskId(), setEpicStatus(epicToUpdate));
+        SubTask newSub = new SubTask(task.getTaskId(), task.getTaskName(), task.getTaskDetails(), task.getTaskStatus(), TaskType.SUBTASK,epic.getTaskId());
+        tasks.put(newSub.getTaskId(),newSub);
+        try {
+            save();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
 
 
     }

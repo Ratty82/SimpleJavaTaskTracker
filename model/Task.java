@@ -63,7 +63,7 @@ public class Task {
     }
 
     public String toCSV(){
-        return getTaskId() + "," + getTaskName() + "," + getTaskDetails() + "," + getTaskStatusString() + "," + getTaskTypeString();
+        return getTaskId() + ";" + getTaskName() + ";" + getTaskDetails() + ";" + getTaskStatusString() + ";" + getTaskTypeString();
     }
 
    

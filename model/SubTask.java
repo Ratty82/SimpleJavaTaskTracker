@@ -26,7 +26,7 @@ public class SubTask extends Task {
     }
 
    @Override
-    public String toCSV() {return super.toCSV() + "," + getTaskParentId();}
+    public String toCSV() {return super.toCSV() + ";" + getTaskParentId();}
 
     
     

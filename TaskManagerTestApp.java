@@ -16,7 +16,7 @@ public class TaskManagerTestApp {
     public static void main(String[] args) {
         HistoryManager hm = Managers.getDefaultHistory();
         TaskManager tm = Managers.getDefault(hm);
-        FileBackedTasksManager fbm = Managers.getDefautFileBacked(hm,Path.of("d:/task/task.csv"));
+
 
         //- Создайте 2 задачи, один эпик с 2 подзадачами, а другой эпик с 1 подзадачей.
         //- Распечатайте списки эпиков, задач и подзадач, через `System.out.println(..)`
