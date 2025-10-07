@@ -22,6 +22,7 @@ public class FileBakedTaskManagerTestApp {
         ftm.getAllTasks().forEach(System.out::println);
         System.out.println("Список загруженной истории: ");
         hm.getHistory().forEach(System.out::println);
+        System.out.println("Максимальный ID задачи: ");
         System.out.println(GenId.getCounterTask());
 
         try {
@@ -41,8 +42,8 @@ public class FileBakedTaskManagerTestApp {
         finally{
             System.out.println("Список задач: ");
             ftm.getAllTasks().forEach(System.out::println);
-            ftm.getAllTasks().forEach(System.out::println);
             System.out.println("Список загруженной истории: ");
+            hm.getHistory().forEach(System.out::println);
         }
 
 
