@@ -26,6 +26,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
         super(history);
         this.saveFile = saveFile;
         try {
+            super.createTaskStorage();
             loadFromFile();
         } catch (IOException | TaskNotFoundException | TaskAlreadyExistException e) {
             super.createTaskStorage();
