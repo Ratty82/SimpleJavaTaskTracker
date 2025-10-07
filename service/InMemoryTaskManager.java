@@ -11,13 +11,20 @@ import util.TaskType;
 import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
-    private Map<Integer, Task> tasks = new HashMap<>();
+    private Map<Integer, Task> tasks;
     private HistoryManager history;
 
     public InMemoryTaskManager(HistoryManager history) {
         this.history = history;
+        createTaskStorage();
     }
 
+    //создание пустого списка задач для наследников
+    public void createTaskStorage(){
+        tasks = new HashMap<>();
+    }
+
+    //получение
 
     //a. Получение списка всех задач.
     @Override
@@ -175,5 +182,9 @@ public class InMemoryTaskManager implements TaskManager {
         tasks.put(newSub.getTaskId(),newSub);
     }
 
+    public HistoryManager getHistory()
+    {
+        return history;
+    }
 
 }
