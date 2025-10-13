@@ -11,8 +11,8 @@ import util.TaskType;
 import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
-    private Map<Integer, Task> tasks;
-    private HistoryManager history;
+    protected Map<Integer, Task> tasks;
+    protected HistoryManager history;
 
     public InMemoryTaskManager(HistoryManager history) {
         this.history = history;
@@ -28,8 +28,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     //a. Получение списка всех задач.
     @Override
-    public List<Task> getAllTasks()
-    {
+    public List<Task> getAllTasks() {
         return tasks.values().stream().toList();
     }
 
@@ -88,7 +87,7 @@ public class InMemoryTaskManager implements TaskManager {
             tasks.put(task.getTaskId(), updated);
             return updated;
         }
-        if (task instanceof SubTask subTask) {
+        else if (task instanceof SubTask subTask) {
             T updated = type.cast(subTask);
             tasks.put(task.getTaskId(), updated);
             Integer parentId = subTask.getTaskParentId();
@@ -123,13 +122,13 @@ public class InMemoryTaskManager implements TaskManager {
             Epic updatedEpic = new Epic(epicToUpdate.getTaskId(),epicToUpdate.getTaskName(),epicToUpdate.getTaskDetails(),epicToUpdate.getTaskStatus(),epicToUpdate.getTaskType(),subTasks);
             setEpicStatus(updatedEpic);
         } 
-        if (task instanceof Epic epic){
+        else if (task instanceof Epic epic){
             HashSet<Integer> subTasks = epic.getAllSubtaskIds();
             tasks.remove(taskId);
             tasks.keySet().removeAll(subTasks);
         }
         else {
-        tasks.remove(taskId);
+            tasks.remove(taskId);
         }
     }
 
@@ -182,8 +181,7 @@ public class InMemoryTaskManager implements TaskManager {
         tasks.put(newSub.getTaskId(),newSub);
     }
 
-    public HistoryManager getHistory()
-    {
+    public HistoryManager getHistory() {
         return history;
     }
 

@@ -43,7 +43,13 @@ public class Epic extends Task {
     }
 
     @Override
-    public String toCSV() {return super.toCSV() + ";" + getAllSubtaskIds();}
+    public String toCSV() {return super.toCSV();}
+
+    @Override
+    public TaskType getTaskType() {
+        return super.getTaskType();
+    }
+
 
     
     

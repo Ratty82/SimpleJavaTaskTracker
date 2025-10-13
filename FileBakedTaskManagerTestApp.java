@@ -26,7 +26,7 @@ public class FileBakedTaskManagerTestApp {
         System.out.println(GenId.getCounterTask());
 
         try {
-            ftm.createTask(new Task(null, "Тестовая задача 1", "Проверка метода createTask", TaskStatus.NEW, TaskType.TASK));
+            ftm.createTask(new Task(null, "Тестовый эпик 2", "Проверка метода createTask", TaskStatus.NEW, TaskType.TASK));
         }
         catch (IllegalArgumentException | TaskAlreadyExistException e) {System.out.println("Ошибка : " + e.getMessage());} finally{
             System.out.println("Список задач: ");
@@ -34,7 +34,7 @@ public class FileBakedTaskManagerTestApp {
         }
 
         try {
-            ftm.includeTaskToEpic(ftm.findTaskByID(10,Task.class) ,ftm.findTaskByID(6, Epic.class));
+            ftm.includeTaskToEpic(ftm.findTaskByID(10,Task.class) ,ftm.findTaskByID(4, Epic.class));
         }
         catch (IllegalArgumentException e) {System.out.println("Ошибка : " + e.getMessage());}
         catch (TaskNotFoundException e) {System.out.println("Ошибка : " + e.getMessage());}
