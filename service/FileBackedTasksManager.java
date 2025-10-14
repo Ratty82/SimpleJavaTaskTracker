@@ -23,11 +23,12 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
 
 
     public FileBackedTasksManager(HistoryManager history, Path saveFile) {
-        super(history); //  createTaskStorage();
+        super(history);
         this.saveFile = saveFile;
         try {
             loadFromFile();
         } catch (IOException | TaskNotFoundException | TaskAlreadyExistException e) {
+            System.out.println("Проблема с чтением из файла или файл не существует :" + e.getMessage());
         }
     }
 
@@ -68,7 +69,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
                 return new Epic(taskId, taskName, taskDetails, taskStatus, taskType);
             } else if (taskType == TaskType.SUBTASK) {
                 Integer parentTaskId = Integer.parseInt(parts[5].trim());
-                System.out.println("Искомый родитель " + parentTaskId);
                 Epic epicToUpdate = findTaskByID(parentTaskId, Epic.class);
                 epicToUpdate.addSubtask(taskId);
                 updateTask(epicToUpdate,Epic.class);
@@ -80,27 +80,33 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
     }
 
     public void loadFromFile() throws IOException, TaskNotFoundException, TaskAlreadyExistException {
-        List<String> listHist = Files.lines(saveFile, StandardCharsets.UTF_8)
-                .dropWhile(s -> !s.isBlank())
+       List<String> listTasks = Files.lines(saveFile, StandardCharsets.UTF_8)
                 .skip(1)
-                .toList();
-        List<String> listTasks = Files.lines(saveFile, StandardCharsets.UTF_8)
                 .takeWhile(s -> !s.isBlank())
                 .toList();
-        for (String l : listTasks) {
+       for (String l : listTasks) {
             Task t = fromString(l);
             createTaskNoSave(t);
         }
-        int maxId = getAllTasks().stream()
+       int maxId = getAllTasks().stream()
                 .mapToInt(Task::getTaskId)
                 .max()
                 .orElse(0);
-        int maxIdInt = maxId;
-        GenId.setCounterTask(maxIdInt);
-        for (String l : listHist) {
-            Task t = fromString(l);
-            getHistory().addTaskToHistory(t);
-        }
+       int maxIdInt = maxId;
+       GenId.setCounterTask(maxIdInt);
+       Optional<String> listHist = Files.lines(saveFile, StandardCharsets.UTF_8)
+                .dropWhile(s -> !s.isBlank())
+                .skip(1)
+                .findFirst();
+       if (listHist.isPresent() || !listHist.equals(Optional.empty())) {
+            for (String l : listHist.get().split(",", -1)) {
+                historyFromString(l);
+            }
+           System.out.println("Прочитанная история " + super.history.getHistory());
+       }
+       else {
+           System.out.println("Прочитанная история пуста");
+       }
     }
 
     public void save() throws ManagerSaveException {
@@ -118,6 +124,12 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
             throw new ManagerSaveException("Не удалось сохранить данные в файл: " + saveFile, e);
         }
         BufferedWriter finalWr = wr;
+        try {
+            finalWr.write("id,type,name,status,description,taskstatus,tasktype,epic");
+            finalWr.newLine();
+        } catch (IOException e) {
+            throw new ManagerSaveException("Не удалось сохранить данные в файл: " + saveFile, e);
+        }
         sortedTasks.stream()
                 .forEach(task -> {
                     try {
@@ -132,21 +144,19 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
         } catch (IOException e) {
             throw new ManagerSaveException("Не удалось сохранить данные в файл: " + saveFile, e);
         }
-        if (getHistory() != null) {
-            HistoryManager historyToWrite = getHistory();
-            //String histId = historyToWrite.getHistory().stream()
-            //        .map(String::valueOf)
-            //        .collect(Collectors.joining(", "));
+        if (super.history.getHistory() != null) {
+            String histId = super.history.getHistory().stream()
+                    .map(Object::toString)
+                    .collect(Collectors.joining(","));
             BufferedWriter finalWr1 = wr;
-            historyToWrite.getHistory().stream()
-                    .forEach(task -> {
-                        try {
-                            finalWr1.write(task.toCSV());
-                            finalWr1.newLine();
-                       } catch (IOException e) {
-                            throw new ManagerSaveException("Не удалось сохранить данные в файл: " + saveFile, e);
-                        }
-                    });
+            try {
+                finalWr1.write(histId);
+                finalWr1.newLine();
+            } catch (IOException e) {
+                throw new ManagerSaveException("Не удалось сохранить данные в файл: " + saveFile, e);
+            }
+        } else {
+            System.out.println("История пустая ");
         }
         try {
             wr.close();
@@ -168,20 +178,14 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
         return tasks;
     }
 
+    //поиск с сохранением истории
     @Override
     public <T extends Task> T findTaskByID(Integer taskId, Class<T> type) throws TaskNotFoundException, IllegalArgumentException {
-        if (taskId == null || taskId < 0) {
-            throw new IllegalArgumentException("ID не должен быть null или отрицательным");
-        }
-        Task t = tasks.get(taskId);
-        if (t == null) {
-            throw new TaskNotFoundException(taskId);
-        }
-        else {
-            history.addTaskToHistory(t);
-            return type.cast(t);
-        }
+        T t = super.findTaskByID(taskId, type);
+        save();
+        return t;
     }
+
 
     //обновление с сохранением
     @Override
@@ -207,15 +211,19 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
 
     }
 
+
     //создать таск без сохранения
     public void createTaskNoSave(Task task) throws TaskAlreadyExistException {
         super.createTask(task);
     }
 
-    //получить всю историю
-    @Override
-    public HistoryManager getHistory() {
-       return super.getHistory();
+    public void historyFromString(String l) throws TaskAlreadyExistException, TaskNotFoundException {
+        try {
+            super.history.addTaskToHistory(Integer.parseInt(l.trim()));
+        }
+        catch (NumberFormatException e) {
+            System.out.println("Невозможно конвертировать пустую строку");
+        }
     }
 
 

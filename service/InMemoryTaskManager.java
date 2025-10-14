@@ -49,7 +49,7 @@ public class InMemoryTaskManager implements TaskManager {
             throw new TaskNotFoundException(taskId);
         }
         else {
-            history.addTaskToHistory(t);
+            history.addTaskToHistory(taskId);
             return type.cast(t);
         }
     }
@@ -179,10 +179,6 @@ public class InMemoryTaskManager implements TaskManager {
         tasks.put(epic.getTaskId(), setEpicStatus(epicToUpdate));
         SubTask newSub = new SubTask(task.getTaskId(), task.getTaskName(), task.getTaskDetails(), task.getTaskStatus(), TaskType.SUBTASK,epic.getTaskId());
         tasks.put(newSub.getTaskId(),newSub);
-    }
-
-    public HistoryManager getHistory() {
-        return history;
     }
 
 }

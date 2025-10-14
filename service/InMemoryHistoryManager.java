@@ -8,26 +8,26 @@ import java.util.List;
 
 public class InMemoryHistoryManager implements HistoryManager{
 
-    private final List<Task> history = new ArrayList<>();
+    private final List<Integer> history = new ArrayList<>();
 
     @Override
-    public List<Task> getHistory() {
+    public List<Integer> getHistory() {
         return history;
     }
 
     @Override
     //добавить задачу в историю
-    public void addTaskToHistory(Task task) throws TaskNotFoundException {
-        if (task == null) {
+    public void addTaskToHistory(Integer taskId) throws TaskNotFoundException {
+        if (taskId == null) {
             throw new TaskNotFoundException(-1);
         }
         else {
             if (history.size() < 10) {
-                history.add(task);
+                history.add(taskId);
             }
             else {
                 history.removeFirst();
-                history.add(task);
+                history.add(taskId);
             }
         }
     }

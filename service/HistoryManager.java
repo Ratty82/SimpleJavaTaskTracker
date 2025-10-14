@@ -7,9 +7,9 @@ import java.util.List;
 
 public interface HistoryManager {
 
-    List<Task> getHistory();
+    List<Integer> getHistory();
 
-    default void addTaskToHistory(Task task) throws TaskNotFoundException{
+    default void addTaskToHistory(Integer taskId) throws TaskNotFoundException{
 
     }
 
