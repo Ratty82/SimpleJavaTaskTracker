@@ -181,4 +181,10 @@ public class InMemoryTaskManager implements TaskManager {
         tasks.put(newSub.getTaskId(),newSub);
     }
 
+    @Override
+    //найти тип задачи по ID
+    public TaskType getTaskType(Integer taskId) throws TaskNotFoundException {
+        return tasks.get(taskId).getTaskType();
+    }
+
 }

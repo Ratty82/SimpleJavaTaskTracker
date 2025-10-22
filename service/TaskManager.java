@@ -5,6 +5,9 @@ import exceptions.TaskNotFoundException;
 import model.Epic;
 import model.SubTask;
 import model.Task;
+import util.TaskStatus;
+import util.TaskType;
+
 import java.util.List;
 
 
@@ -43,4 +46,6 @@ public interface TaskManager {
     //добавить задачу в эпик
     void includeTaskToEpic(Task task, Epic epic) throws IllegalArgumentException, TaskAlreadyExistException;
 
+    //вернуть тип задачи по ID
+    TaskType getTaskType(Integer taskId) throws TaskNotFoundException;
 }

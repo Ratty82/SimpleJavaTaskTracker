@@ -125,7 +125,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
         }
         BufferedWriter finalWr = wr;
         try {
-            finalWr.write("id,type,name,status,description,taskstatus,tasktype,epic");
+            finalWr.write("id,name,description,taskstatus,tasktype,epic");
             finalWr.newLine();
         } catch (IOException e) {
             throw new ManagerSaveException("Не удалось сохранить данные в файл: " + saveFile, e);
@@ -217,6 +217,9 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
         super.createTask(task);
     }
 
+    //вернуть тип таска по ID
+
+
     public void historyFromString(String l) throws TaskAlreadyExistException, TaskNotFoundException {
         try {
             super.history.addTaskToHistory(Integer.parseInt(l.trim()));
@@ -224,6 +227,10 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
         catch (NumberFormatException e) {
             System.out.println("Невозможно конвертировать пустую строку");
         }
+    }
+
+    public TaskType getTaskType(Integer taskId) throws TaskNotFoundException {
+        return super.tasks.get(taskId).getTaskType();
     }
 
 

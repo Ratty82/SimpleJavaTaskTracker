@@ -2,6 +2,7 @@ package service;
 
 import exceptions.TaskNotFoundException;
 import model.Task;
+import util.TaskType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,4 +32,5 @@ public class InMemoryHistoryManager implements HistoryManager{
             }
         }
     }
+
 }
