@@ -3,7 +3,6 @@ import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import com.sun.net.httpserver.HttpExchange;
 import dto.TaskDto;
-import exceptions.TaskAlreadyExistException;
 import exceptions.TaskNotFoundException;
 import model.Epic;
 import model.SubTask;
@@ -122,7 +121,7 @@ public class HttpTaskServerFileBacked {
                                                                DtoVars.getVariant(dto.getTaskStatus(),taskToUpdate.getTaskStatus()),
                                                                TaskType.TASK),
                                                                Task.class);
-                        sendJson(he, 200, updated);
+                        sendJson(he, 202, updated);
                     }
                     case EPIC -> {
                         Epic epicToUpdate = ftm.findTaskByID(dto.getTaskId(), Epic.class);
@@ -133,7 +132,7 @@ public class HttpTaskServerFileBacked {
                                                           TaskType.EPIC,
                                                           epicToUpdate.getAllSubtaskIds()),
                                                           Epic.class);
-                        sendJson(he, 200, updated);
+                        sendJson(he, 202, updated);
                     }
                     case SUBTASK -> {
                         SubTask subTaskToUpdate = ftm.findTaskByID(dto.getTaskId(), SubTask.class);
@@ -144,7 +143,7 @@ public class HttpTaskServerFileBacked {
                                                              TaskType.SUBTASK ,
                                                              subTaskToUpdate.getTaskParentId()),
                                                              SubTask.class);
-                        sendJson(he, 200, updated);
+                        sendJson(he, 202, updated);
                     }
                 }
             } catch (Exception e) {
@@ -161,27 +160,36 @@ public class HttpTaskServerFileBacked {
                 Epic epicToIncludeIn = ftm.findTaskByID(idsEpicTask.get(1), Epic.class);
                 ftm.includeTaskToEpic(taskToInclude,epicToIncludeIn);
                 List<Task> result = List.of(ftm.findTaskByID(idsEpicTask.get(0), SubTask.class),ftm.findTaskByID(idsEpicTask.get(1), Epic.class));
-                sendJson(he, 200, result);
+                sendJson(he, 202, result);
             } catch (Exception e) {
                 sendError(he, 404, "Problem including task :" + e.getMessage());
             }
-        }
+         }
     }
 
     public static void deleteTaskHandler(HttpExchange he) throws IOException {
-        sendJson(he, 200, "OK");
+        // для удаления задач отсылаю query вида /tasks?id=1
+        String query = he.getRequestURI().getQuery();
+        if ( query != null ) {
+            try {
+                Integer taskId = Integer.parseInt(query.split("=")[1]);
+                ftm.removeTaskById(taskId);
+                sendJson(he, 204, null );
+            } catch (Exception e) {
+                sendError(he, 404, "Problem with deletion :" + e.getMessage());
+            }
+        } else {
+            sendError(he, 400, "Request query is null - nothing to delete" );
+        }
     }
 
     public static void getHistoryHandler(HttpExchange he) throws IOException {
-        sendJson(he, 200, "OK");
+        try {
+            sendJson(he, 201, hm.getHistory());
+        } catch (Exception e) {
+            sendError(he, 404, "Problem with history :" + e.getMessage());
+        }
     }
-
-
-
-    public static void deleteHistoryHandler(HttpExchange he) throws IOException {
-        sendJson(he, 200, "OK");
-    }
-
 
 
     public static void main(String[] args) throws IOException {
@@ -194,6 +202,7 @@ public class HttpTaskServerFileBacked {
                     case "POST" -> {postTaskHandler(exchange);}
                     case "PUT" -> {putTaskHandler(exchange);}
                     case "DELETE" -> {deleteTaskHandler(exchange);}
+                    default -> sendError(exchange, 400, "Method not supported");
                 }
             } catch (Exception e) {
                 String body = "Task API Error:" + e.getMessage();
@@ -206,7 +215,7 @@ public class HttpTaskServerFileBacked {
             try {
                 switch (exchange.getRequestMethod()) {
                     case "GET" ->{getHistoryHandler(exchange);}
-                    case "DELETE" -> {deleteHistoryHandler(exchange);}
+                    default -> sendError(exchange, 400, "Method not supported");
                 }
             } catch (Exception e) {
                 String body = "History API Error:" + e.getMessage();
